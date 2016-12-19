@@ -10,15 +10,12 @@ from time import strftime
 
 home = environ['HOME']
 tempFilename = "temp.txt"
-masterFilename = "VLVChatLog_" + strftime("%F") + ".txt"
+masterFilename = strftime("%F") + ".txt"
 tempFile = home + "/" + tempFilename
-masterFile = home + "/Desktop/" + masterFilename
-chdir(home + '/Desktop/')
+masterFile = home + "/Desktop/VLV Chat Logs/" + masterFilename
 br = mechanize.Browser()
 
-
 # http://code.activestate.com/recipes/576694-orderedset/
-
 class OrderedSet(collections.MutableSet):
 
     def __init__(self, iterable=None):
