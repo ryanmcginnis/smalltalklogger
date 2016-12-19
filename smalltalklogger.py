@@ -9,10 +9,10 @@ from time import sleep
 from time import strftime
 
 home = environ['HOME']
-tempFile = "temp.txt"
-file = "VLVChatLog_" + strftime("%F") + ".txt"
-temp1 = home + "/Desktop/" + tempFile
-temp2 = home + "/Desktop/" + file
+tempFilename = "temp.txt"
+masterFilename = "VLVChatLog_" + strftime("%F") + ".txt"
+tempFile = home + "/" + tempFilename
+masterFile = home + "/Desktop/" + masterFilename
 chdir(home + '/Desktop/')
 br = mechanize.Browser()
 
@@ -82,26 +82,27 @@ class OrderedSet(collections.MutableSet):
 def select_form(form):
 	return form.attrs.get('id', None) == 'auth'	
 
-# authenticate
-def auth():
+# log in to VLV
+def authenticateVLV():
 		# br = mechanize.Browser()
 		br.set_handle_robots(False)
 		br.open('http://board.vivalavinyl.com/chat/history')
 		br.select_form(predicate=select_form)
-		br.form['name'] = "username" # change this
-		br.form['pass'] = "password" # change this
+		br.form['name'] = "username"
+		br.form['pass'] = "password"
 		br.submit()
 		br.set_cookie("sid=abcdef; expires=1-Jan-19 23:59:59 GMT")
 
-# scrape and write to file
-def wf(x):
+# scrape chat contents and write to file
+def writeFile(x):
 		text_file = open(x, 'w')
 		response = br.response().read()
 		text_file.write(response)
 		text_file.close()
 		br.open('http://board.vivalavinyl.com/chat/history')
 
-def ff(x):
+# make the file pretty to look at
+def formatFile(x):
 	# strip first line
 	with open(x, 'r') as fin:
 		data = fin.read().splitlines(True)
@@ -138,29 +139,31 @@ def ff(x):
 		f.write(text)
 		f.truncate()
 
-# compares temp and master file, then appends differences to master
-def sf():
-   		with open(temp1) as f: lines1 = OrderedSet(f.readlines())
-   		with open(temp2) as f: lines2 = OrderedSet(f.readlines())
-   		diffs = (lines1 -lines2)
+# compare tempFile and masterFile, and append differences to masterFile
+def appendDifferences():
+   		with open(tempFile) as f: lines1 = OrderedSet(f.readlines())
+   		with open(masterFile) as f: lines2 = OrderedSet(f.readlines())
+   		diffs = (lines1 - lines2)
 
-   		with open(temp2, 'a+') as file_out:
+   		with open(masterFile, 'a+') as file_out:
    			for line in diffs:
    				file_out.write(line)
 
-# initial log, creation of master file
+# log in and initial write to masterFile
 try:
-	auth()
-	wf(temp2)
-	ff(temp2)
+	authenticateVLV()
+	writeFile(masterFile)
+	formatFile(masterFile)
 except: print("Authentication failed!"); quit()
 
+# monitor chat and scrape every x seconds (based on sleep(x))
 while True:
 	try:
-		wf(temp1)
-		ff(temp1)
-		sf()
+		writeFile(tempFile)
+		formatFile(tempFile)
+		appendDifferences()
+
 		print("Logged at " + strftime("%r"))
-		sleep(500)
-	except KeyboardInterrupt: print("\nUser aborted."); remove(temp1); quit() # would like a more elegant way of quitting
-	except: print("Something went wrong during scrape or write."); remove(temp1); quit()
+		sleep(60)
+	except KeyboardInterrupt: print("\nUser aborted."); remove(tempFile); quit() # would like a more elegant way of quitting
+	except: print("Something went wrong during scrape or write."); remove(tempFile); quit()
