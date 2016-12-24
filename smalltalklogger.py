@@ -96,7 +96,7 @@ def authenticateVLV():
 
 # scrape chat contents and write to file
 def writeFile(x):
-		text_file = open(x, 'a+')
+		text_file = open(x, 'w')
 		response = br.response().read()
 		text_file.write(response)
 		text_file.close()
