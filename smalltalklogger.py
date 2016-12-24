@@ -4,18 +4,22 @@ import mechanize
 import re
 from os import chdir
 from os import environ
+from os import path
 from os import remove
 from time import sleep
 from time import strftime
 
+systime = strftime("%F")
 home = environ['HOME']
 tempFilename = "temp.txt"
-masterFilename = strftime("%F") + ".txt"
+masterFilename = systime + ".txt"
 tempFile = home + "/" + tempFilename
 masterFile = home + "/Desktop/VLV Chat Logs/" + masterFilename
 br = mechanize.Browser()
 
+
 # http://code.activestate.com/recipes/576694-orderedset/
+
 class OrderedSet(collections.MutableSet):
 
     def __init__(self, iterable=None):
@@ -92,7 +96,7 @@ def authenticateVLV():
 
 # scrape chat contents and write to file
 def writeFile(x):
-		text_file = open(x, 'w')
+		text_file = open(x, 'a+')
 		response = br.response().read()
 		text_file.write(response)
 		text_file.close()
@@ -149,9 +153,15 @@ def appendDifferences():
 # log in and initial write to masterFile
 try:
 	authenticateVLV()
-	writeFile(masterFile)
-	formatFile(masterFile)
-except: print("Authentication failed!"); quit()
+	# testforfile = 
+	while path.isfile(masterFile):
+		print("Log for " + systime + " exists.")
+		break
+	else:
+		print("Created log for " + systime + ".")
+		writeFile(masterFile)
+		formatFile(masterFile)
+except Exception as e: print(e); quit()
 
 # monitor chat and scrape every x seconds (based on sleep(x))
 while True:
@@ -159,7 +169,6 @@ while True:
 		writeFile(tempFile)
 		formatFile(tempFile)
 		appendDifferences()
-
 		print("Logged at " + strftime("%r"))
 		sleep(60)
 	except KeyboardInterrupt: print("\nUser aborted."); remove(tempFile); quit() # would like a more elegant way of quitting
