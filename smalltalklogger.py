@@ -6,6 +6,7 @@ from os import chdir
 from os import environ
 from os import path
 from os import remove
+from termcolor import colored
 from time import sleep
 from time import strftime
 
@@ -89,8 +90,8 @@ def authenticateVLV():
 		br.set_handle_robots(False)
 		br.open('http://board.vivalavinyl.com/chat/history')
 		br.select_form(predicate=select_form)
-		br.form['name'] = "username"
-		br.form['pass'] = "password"
+		br.form['name'] = "username" # change this
+		br.form['pass'] = "password" # change this, too
 		br.submit()
 		br.set_cookie("sid=abcdef; expires=1-Jan-19 23:59:59 GMT")
 
@@ -140,6 +141,8 @@ def formatFile(x):
 		f.write(text)
 		f.truncate()
 
+# welcome message
+print(colored("VLV Small Talker Logger. Written by celestialroad in 2016.", "blue"))
 # compare tempFile and masterFile, and append differences to masterFile
 def appendDifferences():
    		with open(tempFile) as f: lines1 = OrderedSet(f.readlines())
@@ -161,15 +164,15 @@ try:
 		print("Created log for " + systime + ".")
 		writeFile(masterFile)
 		formatFile(masterFile)
-except Exception as e: print(e); quit()
+except Exception as e: print(colored(e, "red")); quit()
 
 # monitor chat and scrape every x seconds (based on sleep(x))
 while True:
-	try:
-		writeFile(tempFile)
-		formatFile(tempFile)
-		appendDifferences()
-		print("Logged at " + strftime("%r"))
-		sleep(60)
-	except KeyboardInterrupt: print("\nUser aborted."); remove(tempFile); quit() # would like a more elegant way of quitting
-	except: print("Something went wrong during scrape or write."); remove(tempFile); quit()
+		try:
+			writeFile(tempFile)
+			formatFile(tempFile)
+			appendDifferences()
+			print(colored("Logged at " + strftime("%r"), "yellow"))
+			sleep(60)
+		except KeyboardInterrupt: print(colored("\nUser aborted.", "blue")); remove(tempFile); quit() # would like a more elegant way of quitting
+		except: print(colored("Something went wrong during scrape or write.", "red")); remove(tempFile); quit()
