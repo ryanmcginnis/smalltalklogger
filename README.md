@@ -1,5 +1,5 @@
 # smalltalklogger
-Chat logger for [Viva La Vinyl|http://board.vivalavinyl.com/]'s chatroom. Written under macOS.
+Chat logger for VLV's chatroom, http://board.vivalavinyl.com/chat/. Written under macOS.
 
 Requires mechanize
 
