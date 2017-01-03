@@ -141,8 +141,6 @@ def formatFile(x):
 		f.write(text)
 		f.truncate()
 
-# welcome message
-print(colored("VLV Small Talker Logger. Written by celestialroad in 2016.", "blue"))
 # compare tempFile and masterFile, and append differences to masterFile
 def appendDifferences():
    		with open(tempFile) as f: lines1 = OrderedSet(f.readlines())
@@ -153,26 +151,33 @@ def appendDifferences():
    			for line in diffs:
    				file_out.write(line)
 
-# log in and initial write to masterFile
-try:
-	authenticateVLV()
-	# testforfile = 
-	while path.isfile(masterFile):
-		print("Log for " + systime + " exists.")
-		break
-	else:
-		print("Created log for " + systime + ".")
-		writeFile(masterFile)
-		formatFile(masterFile)
-except Exception as e: print(colored(e, "red")); quit()
+def main():
+	print(colored("VLV Small Talker Logger. Written by celestialroad in 2016.", "blue"))
 
-# monitor chat and scrape every x seconds (based on sleep(x))
-while True:
-		try:
-			writeFile(tempFile)
-			formatFile(tempFile)
-			appendDifferences()
-			print(colored("Logged at " + strftime("%r"), "yellow"))
-			sleep(60)
-		except KeyboardInterrupt: print(colored("\nUser aborted.", "blue")); remove(tempFile); quit() # would like a more elegant way of quitting
-		except: print(colored("Something went wrong during scrape or write.", "red")); remove(tempFile); quit()
+	# log in and initial write to masterFile
+	try:
+		authenticateVLV()
+		# testforfile = 
+		while path.isfile(masterFile):
+			print("Log for " + systime + " exists.")
+			break
+		else:
+			print("Created log for " + systime + ".")
+			writeFile(masterFile)
+			formatFile(masterFile)
+	except Exception as e: print(colored(e, "red")); quit()
+
+	# monitor chat and scrape every x seconds (based on sleep(x))
+	while True:
+			try:
+				writeFile(tempFile)
+				formatFile(tempFile)
+				appendDifferences()
+				print(colored("Logged at " + strftime("%r"), "yellow"))
+				sleep(60)
+			except KeyboardInterrupt: print(colored("\nUser aborted.", "blue")); remove(tempFile); quit() # would like a more elegant way of quitting
+			except: print(colored("Something went wrong during scrape or write.", "red")); remove(tempFile); quit()
+
+
+if __name__ == "__main__":
+    main()
