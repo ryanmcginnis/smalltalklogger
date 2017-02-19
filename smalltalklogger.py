@@ -6,6 +6,7 @@ from os import chdir
 from os import environ
 from os import path
 from os import remove
+# from subprocess import Popen
 from termcolor import colored
 from time import sleep
 from time import strftime
@@ -15,7 +16,8 @@ home = environ['HOME']
 tempFilename = "temp.txt"
 masterFilename = systime + ".txt"
 tempFile = home + "/" + tempFilename
-masterFile = home + "/Desktop/VLV Chat Logs/" + masterFilename
+# masterFile = home + "/Desktop/VLV Chat Logs/" + masterFilename
+masterFile = "/Users/ryan/GitHub/website/static/" + masterFilename
 br = mechanize.Browser()
 
 
@@ -90,8 +92,8 @@ def authenticateVLV():
 		br.set_handle_robots(False)
 		br.open('http://board.vivalavinyl.com/chat/history')
 		br.select_form(predicate=select_form)
-		br.form['name'] = "username" # change this
-		br.form['pass'] = "password" # change this, too
+		br.form['name'] = "chatlogger"
+		br.form['pass'] = "27865312"
 		br.submit()
 		br.set_cookie("sid=abcdef; expires=1-Jan-19 23:59:59 GMT")
 
@@ -141,7 +143,6 @@ def formatFile(x):
 		f.write(text)
 		f.truncate()
 
-# compare tempFile and masterFile, and append differences to masterFile
 def appendDifferences():
    		with open(tempFile) as f: lines1 = OrderedSet(f.readlines())
    		with open(masterFile) as f: lines2 = OrderedSet(f.readlines())
@@ -152,12 +153,11 @@ def appendDifferences():
    				file_out.write(line)
 
 def main():
-	print(colored("VLV Small Talker Logger. Written by celestialroad in 2016.", "blue"))
+	# compare tempFile and masterFile, and append differences to masterFile
 
 	# log in and initial write to masterFile
 	try:
 		authenticateVLV()
-		# testforfile = 
 		while path.isfile(masterFile):
 			print("Log for " + systime + " exists.")
 			break
@@ -169,15 +169,18 @@ def main():
 
 	# monitor chat and scrape every x seconds (based on sleep(x))
 	while True:
+			#the_time = strftime("%H:%M:%S")
 			try:
 				writeFile(tempFile)
 				formatFile(tempFile)
 				appendDifferences()
 				print(colored("Logged at " + strftime("%r"), "yellow"))
-				sleep(60)
+				# Popen("cd ~/GitHub/website/; git init; git add .; git commit -m 'Update'; git push; git push heroku master; heroku logs", shell=True)
+				# for serving logs via my website; would rather just do this manually though
+				sleep(300)
 			except KeyboardInterrupt: print(colored("\nUser aborted.", "blue")); remove(tempFile); quit() # would like a more elegant way of quitting
 			except: print(colored("Something went wrong during scrape or write.", "red")); remove(tempFile); quit()
 
-
 if __name__ == "__main__":
-    main()
+	print(colored("VLV Small Talker Logger. Written by celestialroad in 2016.", "blue"))
+	main()
