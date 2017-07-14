@@ -2,11 +2,14 @@ import collections
 import fileinput
 import mechanize
 import re
+import logging
+import os
 from os import chdir
 from os import environ
 from os import path
 from os import remove
 # from subprocess import Popen
+from sys import argv
 from termcolor import colored
 from time import sleep
 from time import strftime
@@ -20,9 +23,7 @@ tempFile = home + "/" + tempFilename
 masterFile = "/Users/ryan/GitHub/website/static/" + masterFilename
 br = mechanize.Browser()
 
-
 # http://code.activestate.com/recipes/576694-orderedset/
-
 class OrderedSet(collections.MutableSet):
 
     def __init__(self, iterable=None):
@@ -176,10 +177,12 @@ def main():
 				appendDifferences()
 				print(colored("Logged at " + strftime("%r"), "yellow"))
 				# Popen("cd ~/GitHub/website/; git init; git add .; git commit -m 'Update'; git push; git push heroku master; heroku logs", shell=True)
-				# for serving logs via my website; would rather just do this manually though
-				sleep(300)
+				if len(argv) > 1:
+					sleep(int(argv[1]))
+				else:
+					sleep(60)
 			except KeyboardInterrupt: print(colored("\nUser aborted.", "blue")); remove(tempFile); quit() # would like a more elegant way of quitting
-			except: print(colored("Something went wrong during scrape or write.", "red")); remove(tempFile); quit()
+			except Exception as e: print(colored("Something went wrong during scrape or write.", "red")); print(e); remove(tempFile); quit()
 
 if __name__ == "__main__":
 	print(colored("VLV Small Talker Logger. Written by celestialroad in 2016.", "blue"))
