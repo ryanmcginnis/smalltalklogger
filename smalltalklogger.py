@@ -93,8 +93,8 @@ def authenticateVLV():
 		br.set_handle_robots(False)
 		br.open('http://board.vivalavinyl.com/chat/history')
 		br.select_form(predicate=select_form)
-		br.form['name'] = "chatlogger"
-		br.form['pass'] = "27865312"
+		br.form['name'] = "username"
+		br.form['pass'] = "password"
 		br.submit()
 		br.set_cookie("sid=abcdef; expires=1-Jan-19 23:59:59 GMT")
 
